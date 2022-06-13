@@ -29,15 +29,19 @@
             </header>
             <div class="filter-content collapse show" id="collapse_1" style="">
                 <div class="card-body">
-                    
+                     
                     <ul class="list-menu">
-                    <li><a href="#">People  </a></li>
-                    <li><a href="#">Watches </a></li>
+                    <li><a href="{% url 's-store' %}">All</a></li>
+                    {% for category in all_categories %}
+                        {% comment %} <li><a href="{% url 'products-by-category' category.slug %}">{{ category }}  </a></li> {% endcomment %}
+                        <li><a href="{{ category.get_url }}">{{ category }}  </a></li>
+                    {% endfor %}
+                    {% comment %} <li><a href="#">Watches </a></li>
                     <li><a href="#">Cinema  </a></li>
                     <li><a href="#">Clothes  </a></li>
                     <li><a href="#">Home items </a></li>
-                    <li><a href="#">Animals</a></li>
-                    <li><a href="#">People </a></li>
+                    <li><a href="#">Animals</a></li> 
+                    <li><a href="#">People </a></li> {% endcomment %}
                     </ul>
     
                 </div> <!-- card-body.// -->
@@ -140,7 +144,7 @@
                         </div> <!-- img-wrap.// -->
                         <figcaption class="info-wrap">
                             <div class="fix-height">
-                                <a href="./product-detail.html" class="title">{{ product.product_name }}</a>
+                                <a href="{{ product.product_url }}" class="title">{{ product.product_name }}</a>
                                 <div class="price-wrap mt-2">
                                     <span class="price">${{ product.price }}</span>
                                     {% comment %} <del class="price-old">$1980</del> {% endcomment %}

@@ -1,3 +1,5 @@
+from msilib.schema import Error
+from django.http import HttpResponse
 from django.shortcuts import render
 
 from Store.models import (
@@ -17,3 +19,13 @@ def store(request,category_slug=None):
         'product_count':product_count
     }
     return render(request,'Store/store.html',context)
+
+def product_detail(request,category_slug,product_slug):
+    try:
+        single_product = Product.objects.get(category__slug=category_slug,p_slug=product_slug)
+    except Exception as Error:
+        raise Error  
+    context = {
+        'single_product':single_product
+    }
+    return render(request,'Store/product_detail.html',context)

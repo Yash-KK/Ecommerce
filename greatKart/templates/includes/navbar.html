@@ -36,7 +36,8 @@
                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> 
                         <i class="fa fa-bars"></i> All category 
                     </button>
-                    <div class="dropdown-menu">        
+                    <div class="dropdown-menu">       
+                        <a class="dropdown-item" href="{% url 's-store' %}">All</a> 
                         {% for category in all_categories %}                                      
                          <a class="dropdown-item" href="{% url 'products-by-category' category.slug %}">{{ category }}</a>
                         {% endfor %}  
