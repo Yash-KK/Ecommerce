@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Category',
     'accounts',
-    'Store',    
+    'Store',
+    'Cart',    
 ]
 AUTH_USER_MODEL = 'accounts.Account'
 MIDDLEWARE = [
