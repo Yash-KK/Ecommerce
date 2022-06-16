@@ -2,7 +2,7 @@ from django.db import models
 from Category.models import Category
 from django.urls import reverse
 # Create your models here.
-
+ 
 class Product(models.Model):
     product_name = models.CharField(max_length=100,unique=True)
     p_slug = models.SlugField(max_length=100,unique=True)
