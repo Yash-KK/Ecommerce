@@ -3,6 +3,9 @@ from msilib.schema import Error
 from django.http import HttpResponse
 from django.shortcuts import render
 
+# Paginator
+from django.core.paginator import Paginator
+
 from Store.models import (
     Product
 )
@@ -16,12 +19,19 @@ def store(request,category_slug=None):
     if category_slug:
         all_products = Product.objects.all().filter(category__slug=category_slug)
         product_count = all_products.count()
+        paginator = Paginator(all_products,1)
+        page = request.GET.get('page',1)
+        paged_products = paginator.page(page)
     else:    
         all_products = Product.objects.all().filter(is_available=True)
+        paginator = Paginator(all_products,6)
+        page = request.GET.get('page',1)
+        paged_products = paginator.page(page)
         product_count = all_products.count()
     
     context = {
-        'products':all_products, 
+        # 'products':all_products, 
+        'products':paged_products,
         'product_count':product_count
     }
     return render(request,'Store/store.html',context)
