@@ -1,8 +1,10 @@
 from multiprocessing import context
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
 from Store.models import (
-    Product
+    Product,
+    Variation
 )
 from .models import (
     Cart,
@@ -18,7 +20,17 @@ def _cart_id(request):  # Session key
     
 
 def addto_cart(request,product_id):
-    product = Product.objects.get(id=product_id)                      # Get the Product
+    product = Product.objects.get(id=product_id)  # Get the Product
+    product_variation = []
+    if request.method == 'POST':        
+        for item in request.POST:
+            key = item
+            value = request.POST[key]
+            try:
+                variation = Variation.objects.get(product=product,variation_category__iexact=key, variation_value__iexact=value)
+                product_variation.append(variation)
+            except:
+                pass                                
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))            # Get the Cart    
     except Cart.DoesNotExist:
