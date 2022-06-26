@@ -77,10 +77,7 @@
                       <option value="" disabled selected>Select</option>
                       {% for i in single_product.variation_set.sizes %}
                         <option value="{{ i.variation_value }}">{{ i.variation_value }}</option>
-                        {% endfor %}  
-                      {% comment %} <option value="Medium">Medium</option>
-                      
-                      <option value="Large">Large</option> {% endcomment %}
+                        {% endfor %}                      
                     </select>
                 </div>
             </div> <!-- row.// -->
@@ -89,12 +86,12 @@
             {% if single_product.stock <= 0 %}
               <h4 class='text-danger'> <strong>Out of Stock</strong>    </h4> 
             {% else %}            
-                {% if cart_item %}
+                {% comment %} {% if cart_item %}
                   <a href="#" class="btn  btn-success"> <span class="text">Added to cart</span> <i class="fas fa-check"></i>  </a>
                   <a href="{% url 'cart' %}" class="btn  btn-primary"> <span class="text">View cart</span> <i class="fas fa-eye"></i>  </a>
-                  {% else %}
+                  {% else %} {% endcomment %}
                   <button type="submit" class="btn  btn-primary"> <span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i>  </button>
-                {% endif %}
+                {% comment %} {% endif %} {% endcomment %}
                   
             {% endif %}          
         </article> <!-- product-info-aside .// -->
