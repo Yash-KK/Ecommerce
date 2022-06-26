@@ -22,7 +22,7 @@ class Product(models.Model):
         return f"{self.product_name}" 
 
 variation_category_choices = (
-    ('color','color'),
+    ('color','color'), 
     ('size','size'),
 )    
 
