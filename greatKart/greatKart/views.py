@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 
 from Store.models import (
     Product
@@ -7,6 +8,7 @@ from Store.models import (
 from Category.models import (
     Category
 ) 
+
 
 def home(request):
     all_products = Product.objects.all().filter(is_available=True)

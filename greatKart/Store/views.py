@@ -1,7 +1,11 @@
 from itertools import product
-from msilib.schema import Error
+# from msilib.schema import Error
+
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.contrib.auth.decorators import (
+    login_required
+)
 
 # Paginator
 from django.core.paginator import Paginator
@@ -15,6 +19,8 @@ from Cart.models import (
 )
 from Cart.views import _cart_id
 # Create your views here.
+
+# @login_required(login_url='/accounts/login/')
 def store(request,category_slug=None):    
     if category_slug:
         all_products = Product.objects.all().filter(category__slug=category_slug).order_by('id')
@@ -36,6 +42,7 @@ def store(request,category_slug=None):
     }
     return render(request,'Store/store.html',context)
 
+# @login_required(login_url='/accounts/login/')
 def search(request):
     if 'keyword' in request.GET:
         keyword = request.GET['keyword']
@@ -48,8 +55,7 @@ def search(request):
     }            
     return render(request,'Store/store.html',context) 
   
-def product_detail(request,category_slug,product_slug):    
-    
+def product_detail(request,category_slug,product_slug):  
     try:
         single_product = Product.objects.get(category__slug=category_slug,p_slug=product_slug)
         cart_item = CartItem.objects.filter(cart__cart_id=_cart_id(request),product=single_product).exists()
