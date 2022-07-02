@@ -11,7 +11,7 @@ from .models import (
     CartItem
 )
 # Create your views here.
-
+ 
 def _cart_id(request):  # Session key
     cart =request.session.session_key
     if not cart:

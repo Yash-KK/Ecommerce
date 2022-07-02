@@ -10,7 +10,7 @@ from Store.models import (
     Product
 )
 from Cart.models import (
-    Cart,
+    Cart, 
     CartItem
 )
 from Cart.views import _cart_id
