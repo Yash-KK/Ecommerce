@@ -1,4 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+
+from django.contrib import messages
+from django.contrib.auth import (
+    authenticate,
+    login as auth_login,
+    logout as auth_logout
+)
 
 from .models import (
     Account
@@ -23,6 +30,11 @@ def register(request):
             user = Account.objects.create_user(first_name=first_name, last_name=last_name, email=email, username=username, password=password)
             user.phone_number = phone_number
             user.save()
+            messages.success(request,'Registered Successfully!')
+            return redirect("login")
+        else:
+            messages.error(request,'Registeration Unsuccessfull')
+            return redirect('register') 
     else:
         form = RegisterForm()            
         
@@ -31,6 +43,21 @@ def register(request):
     }
     return render(request,'accounts/register.html',context)
 
-
 def login(request):
+    if request.method == "POST":
+        email = request.POST['email']
+        password = request.POST['password']
+        user = authenticate(email=email, password=password)
+        if user is not None:
+            auth_login(request,user)
+            messages.success(request,"User Logged in Successfully!")
+            return redirect('home')
+        else:
+            messages.error(request,'Login not Successfull! Please try Again!')
+            return redirect("login")
     return render(request,'accounts/login.html')
+
+def logout(request):
+    messages.success(request,'Logged Out Successfully!')
+    auth_logout(request)     
+    return redirect('login')

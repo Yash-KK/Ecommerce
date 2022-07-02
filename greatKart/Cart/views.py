@@ -1,11 +1,16 @@
 from multiprocessing import context
+
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import (
+    login_required
+)
 
 from Store.models import (
     Product,
     Variation
 )
+
 from .models import (
     Cart,
     CartItem
@@ -95,7 +100,8 @@ def delete_cartitem(request,product_id,item_id):
     cart_item.delete()
     return redirect('cart')    
 
-def cart(request,total= 0, cart_items = None):
+# @login_required(login_url='/accounts/login/')
+def cart(request,total= 0, cart_items = None, cart=None):
     cart = Cart.objects.get(cart_id = _cart_id(request))
     cart_items = CartItem.objects.filter(cart = cart, is_active = True)
     for cart_item in cart_items:
