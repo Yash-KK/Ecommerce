@@ -5,9 +5,6 @@ from django.contrib.auth.decorators import login_required
 from Store.models import (
     Product
 )
-from Category.models import (
-    Category
-) 
 
 
 def home(request):
