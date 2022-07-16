@@ -43,7 +43,7 @@ def store(request,category_slug=None):
     return render(request,'Store/store.html',context)
 
 # @login_required(login_url='/accounts/login/')
-def search(request,products=None,p_count=None):
+def search(request):
     if 'keyword' in request.GET:
         keyword = request.GET['keyword']
         if keyword:              
@@ -52,7 +52,7 @@ def search(request,products=None,p_count=None):
     context = {
         'products':products,
         'product_count':p_count
-    }             
+    }            
     return render(request,'Store/store.html',context) 
   
 def product_detail(request,category_slug,product_slug):  

@@ -1,4 +1,3 @@
-from posixpath import split
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib import messages
@@ -7,7 +6,7 @@ from django.contrib.auth import (
     login as auth_login,
     logout as auth_logout
 )
-from urllib.parse import urlparse
+
 # VERIFICATION
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -15,26 +14,16 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
+ 
 
-
-# Models
 from .models import (
     Account
 ) 
-from Cart.models import (
-    Cart,
-    CartItem
-)
 
-# Forms
 from .forms import (
     RegisterForm
 )
 
-# Views
-from Cart.views import (
-    _cart_id
-)
 # Write your views here
 def register(request):
     if request.method == 'POST':
@@ -102,54 +91,9 @@ def login(request):
         email = request.POST['email']
         password = request.POST['password']
         user = authenticate(email=email, password=password)
-        if user is not None:
-            try:
-                cart = Cart.objects.get(cart_id=_cart_id(request))
-                cartitem_exist = CartItem.objects.filter(cart=cart).exists()  
-                if cartitem_exist:
-                    cart_items = CartItem.objects.filter(cart=cart)
-                    
-                    # For the existing cart
-                    product_variations = []
-                    for item in cart_items:
-                        var = item.variations.all()
-                        product_variations.append(list(var))
-                    
-                    # For the Current Cart id (woh cart id wala items jab user click karta hai login ko)
-                    cart_item = CartItem.objects.filter(user=user)            
-                    existing_variations = []
-                    item_id = []
-                    for item in cart_item:
-                        var = item.variations.all()
-                        existing_variations.append(list(var))
-                        item_id.append(item.id)  
-                    
-                    for pr in product_variations:
-                        if pr in existing_variations:   # If that pro_var is in existing product variations, then increment the item
-                            index = existing_variations.index(pr)
-                            i_id = item_id[index]
-                            item = CartItem.objects.get(id=i_id)
-                            item.quantity +=1
-                            item.user = user
-                            item.save()
-                        else:
-                            cart_items = CartItem.objects.filter(cart=cart)         
-                            for item in cart_items:
-                                item.user = user
-                                item.save()                    
-            except:
-                pass                      
-            auth_login(request,user)
-            messages.success(request,"User Logged in Successfully!")
-            url = request.META.get('HTTP_REFERER')
-            try:
-                query = urlparse(url).query
-                params = dict(x.split("=") for x in query.split("&"))
-                
-                if 'next' in params:
-                    next_page = params['next']
-                    return redirect(next_page)
-            except:                
+        if user is not None:            
+                auth_login(request,user)
+                messages.success(request,"User Logged in Successfully!")
                 return redirect('dashboard')            
         else:
             messages.error(request,'Login not Successfull! Please try Again!')
