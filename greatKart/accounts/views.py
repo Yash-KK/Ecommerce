@@ -1,3 +1,4 @@
+from posixpath import split
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib import messages
@@ -7,6 +8,8 @@ from django.contrib.auth import (
     logout as auth_logout
 )
 
+from urllib.parse import urlparse
+
 # VERIFICATION
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -15,15 +18,25 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
  
-
+# MODELS
 from .models import (
     Account
 ) 
+from Cart.models import (
+    Cart,
+    CartItem
+)
 
+# FORMS
 from .forms import (
     RegisterForm
 )
 
+
+# VIEWS
+from Cart.views import (
+    _cart_id
+)
 # Write your views here
 def register(request):
     if request.method == 'POST':
@@ -91,10 +104,56 @@ def login(request):
         email = request.POST['email']
         password = request.POST['password']
         user = authenticate(email=email, password=password)
-        if user is not None:            
-                auth_login(request,user)
+        if user is not None:          
+                try:      
+                    _cart = Cart.objects.get(cart_id = _cart_id(request))    
+                    cart_items = CartItem.objects.filter(cart=_cart).exists()
+                                       
+                    if cart_items:
+                        cart_items = CartItem.objects.filter(cart=_cart)
+                        
+                        #Variations from the Cart
+                        product_variations = []                        
+                        for item in cart_items:
+                            varr = item.variations.all()
+                            product_variations.append(list(varr))
+                             
+                        # Existing Variations (Variations selected by that specific User)
+                        cart_item = CartItem.objects.filter(user=user)
+                        existing_variations = []
+                        item_id = []
+                        for item in cart_item:
+                            var = item.variations.all()
+                            existing_variations.append(list(var))
+                            item_id.append(item.id)      
+                        
+                        for pr in product_variations:
+                            if pr in existing_variations:
+                                ind = existing_variations.index(pr)
+                                _id = item_id[ind]
+                                c_item = CartItem.objects.get(id=_id)
+                                c_item.quantity +=1
+                                c_item.user = user
+                                c_item.save()  
+                            else:
+                                cart_items = CartItem.objects.filter(cart=_cart)
+                                for item in cart_items:
+                                    item.user = user
+                                    item.save()                    
+                except:                      
+                    pass
+                auth_login(request,user)    
                 messages.success(request,"User Logged in Successfully!")
-                return redirect('dashboard')            
+                url = request.META.get("HTTP_REFERER")               
+                try:
+                    query = urlparse(url=url).query
+                    
+                    params = dict(x.split("=") for x in query.split("&"))
+                    if 'next' in params:
+                        next_page = params['next']
+                        return redirect(next_page)                    
+                except:    
+                    return redirect('dashboard')            
         else:
             messages.error(request,'Login not Successfull! Please try Again!')
             return redirect("login")
